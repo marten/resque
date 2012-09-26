@@ -1,14 +1,16 @@
 require 'thread'
+require 'delegate'
 
 module Resque
   ###
   # Sized LIFO queue.
-  class SizedStack < SizedQueue
+  class SizedStack < DelegateClass(SizedQueue)
     def initialize(size)
-      super
-      class << @que
-        alias :shift :pop
-      end
+      super(SizedQueue.new(size))
+    end
+
+    def shift
+      __getobj__.pop
     end
   end
 end
